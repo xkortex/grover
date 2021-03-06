@@ -50,6 +50,10 @@ flags.DEFINE_string(
     "output_dir", None,
     "The output directory where the model checkpoints will be written.")
 
+flags.DEFINE_string(
+    "numpy_dir", None,
+    "The output directory where the numpy array files will be written.")
+
 ## Other parameters
 flags.DEFINE_string(
     "init_checkpoint", None,
@@ -138,6 +142,7 @@ def main(_):
     LABEL_INV_MAP = {label: i for i, label in enumerate(LABEL_LIST)}
 
     tf.logging.set_verbosity(tf.logging.INFO)
+    numpy_dir = FLAGS.output_dir if FLAGS.numpy_dir is None else FLAGS.numpy_dir
 
     # These lines of code are just to check if we've already saved something into the directory
     if tf.gfile.Exists(FLAGS.output_dir):
@@ -146,10 +151,9 @@ def main(_):
             print("EXITING BECAUSE DO_TRAIN is true", flush=True)
             return
         for split in ['val', 'test']:
-            if tf.gfile.Exists(os.path.join(FLAGS.output_dir, f'{split}-probs.npy')) and getattr(FLAGS,
+            if tf.gfile.Exists(os.path.join(numpy_dir, f'{split}-probs.npy')) and getattr(FLAGS,
                                                                                                  f'predict_{split}'):
-                print(f"EXITING BECAUSE {split}-probs.npy exists", flush=True)
-                return
+                raise FileExistsError(f"EXITING BECAUSE {split}-probs.npy exists")
         # Double check to see if it has trained!
         if not tf.gfile.Exists(os.path.join(FLAGS.output_dir, 'checkpoint')):
             print("EXITING BECAUSE NO CHECKPOINT.", flush=True)
@@ -326,7 +330,7 @@ def main(_):
             if i < num_actual_examples:
                 probs[i] = res['probs']
 
-        _save_np(os.path.join(FLAGS.output_dir, f'{split}-probs.npy'), probs)
+        _save_np(os.path.join(numpy_dir, f'{split}-probs.npy'), probs)
 
         preds = np.argmax(probs, 1)
         labels = np.array([LABEL_INV_MAP[x['label']] for x in examples[split][:num_actual_examples]])

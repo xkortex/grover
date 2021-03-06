@@ -587,7 +587,7 @@ def model_fn_builder(config: GroverConfig, init_checkpoint, learning_rate,
 
         tf.logging.info("*** Features ***")
         for name in sorted(features.keys()):
-            tf.logging.info("  name = %s, shape = %s" % (name, features[name].shape))
+            tf.logging.debug("  name = %s, shape = %s" % (name, features[name].shape))
 
         input_ids = features["input_ids"]
 
