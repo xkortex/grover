@@ -587,7 +587,7 @@ def model_fn_builder(config: GroverConfig, init_checkpoint, learning_rate,
 
         tf.logging.info("*** Features ***")
         for name in sorted(features.keys()):
-            tf.logging.info("  name = %s, shape = %s" % (name, features[name].shape))
+            tf.logging.debug("  name = %s, shape = %s" % (name, features[name].shape))
 
         input_ids = features["input_ids"]
 
@@ -626,12 +626,12 @@ def model_fn_builder(config: GroverConfig, init_checkpoint, learning_rate,
             else:
                 tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
-        tf.logging.info("**** Trainable Variables ****")
+        tf.logging.debug("**** Trainable Variables ****")
         for var in tvars:
             init_string = ""
             if var.name in initialized_variable_names:
                 init_string = ", *INIT_FROM_CKPT*"
-            tf.logging.info("  name = %s, shape = %s%s", var.name, var.shape,
+            tf.logging.debug("  name = %s, shape = %s%s", var.name, var.shape,
                             init_string)
 
         output_spec = None
@@ -891,12 +891,12 @@ def classification_model_fn_builder(config: GroverConfig, init_checkpoint, learn
             else:
                 tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
-        tf.logging.info("**** Trainable Variables ****")
+        tf.logging.debug("**** Trainable Variables ****")
         for var in tvars:
             init_string = ""
             if var.name in initialized_variable_names:
                 init_string = ", *INIT_FROM_CKPT*"
-            tf.logging.info("  name = %s, shape = %s%s", var.name, var.shape,
+            tf.logging.debug("  name = %s, shape = %s%s", var.name, var.shape,
                             init_string)
 
         output_spec = None
