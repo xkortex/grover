@@ -21,7 +21,7 @@ import os
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.python.lib.io import file_io
+if type(tf.contrib) != type(tf): tf.contrib._warning = None  # silence contrib deprecation warning
 
 from lm.dataloader import classification_convert_examples_to_features, classification_input_fn_builder
 from lm.modeling import classification_model_fn_builder, GroverConfig
@@ -118,6 +118,10 @@ flags.DEFINE_integer(
     "num_tpu_cores", 8,
     "Only used if `use_tpu` is True. Total number of TPU cores to use.")
 
+flags.DEFINE_string(
+    "log_level", 'INFO',
+    "Set the log level of tf.logging")
+
 
 def _flatten_and_tokenize_metadata(encoder, item):
     """
@@ -141,7 +145,7 @@ def main(_):
     LABEL_LIST = ['machine', 'human']
     LABEL_INV_MAP = {label: i for i, label in enumerate(LABEL_LIST)}
 
-    tf.logging.set_verbosity(tf.logging.INFO)
+    tf.logging.set_verbosity(FLAGS.log_level)
     numpy_dir = FLAGS.output_dir if FLAGS.numpy_dir is None else FLAGS.numpy_dir
 
     # These lines of code are just to check if we've already saved something into the directory
